@@ -14,24 +14,25 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testRestoreFolderFromTrash() {
-        createFolder(FOLDER_NAME);
-        deleteFolderToTrash(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
+        deleteFolderToTrash(folderName);
 
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)
-                .get("v1/disk/trash/resources")
+                .get(TRASH_RESOURCES_PATH)
                 .then()
                 .extract().path("_embedded.items");
 
         String folderPath = items.stream()
-                .filter(item -> FOLDER_NAME.equals(item.get("name")))
+                .filter(item -> folderName.equals(item.get("name")))
                 .map(item -> (String) item.get("path"))
                 .findFirst()
                 .orElse(null);
 
         Response response = given()
                 .spec(requestSpec)
-                .put("v1/disk/trash/resources/restore?path=%s".formatted(folderPath))
+                .put(RESTORE_FROM_TRASH_PATH.formatted(folderPath))
                 .then()
                 .log().all()
                 .extract().response();
@@ -41,7 +42,7 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
         if (statusCode == 201) {
             response.then()
                     .body("method", equalTo("GET"))
-                    .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s".formatted(FOLDER_NAME)))
+                    .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s".formatted(folderName)))
                     .body("templated", equalTo(false));
         } else if (statusCode == 202) {
             response.then()
@@ -53,25 +54,26 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testRestoreFolderWithNestedFolderFromTrash() {
-        createFolder(FOLDER_NAME);
-        createFolder(FOLDER_NAME + "/" + NESTED_FOLDER);
-        deleteFolderToTrash(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
+        createFolder(folderName + "/" + NESTED_FOLDER);
+        deleteFolderToTrash(folderName);
 
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)
-                .get("v1/disk/trash/resources")
+                .get(TRASH_RESOURCES_PATH)
                 .then()
                 .extract().path("_embedded.items");
 
         String folderPath = items.stream()
-                .filter(item -> FOLDER_NAME.equals(item.get("name")))
+                .filter(item -> folderName.equals(item.get("name")))
                 .map(item -> (String) item.get("path"))
                 .findFirst()
                 .orElse(null);
 
         Response response = given()
                 .spec(requestSpec)
-                .put("v1/disk/trash/resources/restore?path=%s".formatted(folderPath))
+                .put(RESTORE_FROM_TRASH_PATH.formatted(folderPath))
                 .then()
                 .log().all()
                 .extract().response();
@@ -81,7 +83,7 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
         if (statusCode == 201) {
             response.then()
                     .body("method", equalTo("GET"))
-                    .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s".formatted(FOLDER_NAME)))
+                    .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s".formatted(folderName)))
                     .body("templated", equalTo(false));
         } else if (statusCode == 202) {
             response.then()
@@ -93,24 +95,25 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testRestoreFolderFromTrashWithoutAuthToken() {
-        createFolder(FOLDER_NAME);
-        deleteFolderToTrash(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
+        deleteFolderToTrash(folderName);
 
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)
-                .get("v1/disk/trash/resources")
+                .get(TRASH_RESOURCES_PATH)
                 .then()
                 .extract().path("_embedded.items");
 
         String folderPath = items.stream()
-                .filter(item -> FOLDER_NAME.equals(item.get("name")))
+                .filter(item -> folderName.equals(item.get("name")))
                 .map(item -> (String) item.get("path"))
                 .findFirst()
                 .orElse(null);
 
         given()
-                .spec(requestSpec)
-                .put("v1/disk/trash/resources/restore?path=%s".formatted(folderPath))
+                .spec(requestSpecWithoutAuth)
+                .put(RESTORE_FROM_TRASH_PATH.formatted(folderPath))
                 .then()
                 .log().all()
                 .statusCode(401)
@@ -123,7 +126,7 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
     public void testRestoreNonExistentFolder() {
         given()
                 .spec(requestSpec)
-                .put("v1/disk/trash/resources/restore?path=NonExistentResource")
+                .put(RESTORE_FROM_TRASH_PATH.formatted("NonExistentResource"))
                 .then()
                 .log().all()
                 .statusCode(404)

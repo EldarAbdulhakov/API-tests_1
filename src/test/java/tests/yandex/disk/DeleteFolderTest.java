@@ -10,11 +10,12 @@ public class DeleteFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testDeleteFolderToTrash() {
-        createFolder(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
 
         given()
                 .spec(requestSpec)
-                .delete("v1/disk/resources?path=%s".formatted(FOLDER_NAME))
+                .delete(RESOURCE_PATH.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(204);
@@ -22,11 +23,12 @@ public class DeleteFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testDeleteFolderPermanently() {
-        createFolder(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
 
         given()
                 .spec(requestSpec)
-                .delete("v1/disk/resources?path=%s&permanently=true".formatted(FOLDER_NAME))
+                .delete(RESOURCE_PATH_PERMANENTLY.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(204);
@@ -34,12 +36,13 @@ public class DeleteFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testDeleteFolderWithNestedFolderToTrash() {
-        createFolder(FOLDER_NAME);
-        createFolder(FOLDER_NAME + "/" + NESTED_FOLDER);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
+        createFolder(folderName + "/" + NESTED_FOLDER);
 
         given()
                 .spec(requestSpec)
-                .delete("v1/disk/resources?path=%s&permanently=true".formatted(FOLDER_NAME))
+                .delete(RESOURCE_PATH_PERMANENTLY.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(202)
@@ -50,9 +53,11 @@ public class DeleteFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testDeleteNonExistentFolderToTrash() {
+        String folderName = uniqueFolderName.get();
+
         given()
                 .spec(requestSpec)
-                .delete("v1/disk/resources?path=%s".formatted(FOLDER_NAME))
+                .delete(RESOURCE_PATH.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(404)
@@ -63,11 +68,12 @@ public class DeleteFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testDeleteFolderWithoutOAuthToken() {
-        createFolder(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
 
         given()
                 .spec(requestSpecWithoutAuth)
-                .delete("v1/disk/resources?path=%s".formatted(FOLDER_NAME))
+                .delete(RESOURCE_PATH.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(401)
