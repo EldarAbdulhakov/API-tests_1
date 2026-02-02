@@ -9,20 +9,31 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import utils.PropertyProvider;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 
 public class BaseYandexDiscTest {
 
-    protected final String FOLDER_NAME = "folderName";
-    protected final String NESTED_FOLDER = "nestedFolder";
+    protected static final String RESOURCE_PATH = "v1/disk/resources?path=%s";
+    protected static final String NESTED_RESOURCE_PATH = "v1/disk/resources?path=%s/%s";
+    protected static final String RESOURCE_PATH_PERMANENTLY = "v1/disk/resources?path=%s&permanently=true";
+    protected static final String UPLOAD_RESOURCE_PATH = "v1/disk/resources/upload?path=%s";
+    protected static final String NESTED_UPLOAD_RESOURCE_PATH = "v1/disk/resources/upload?path=%s/%s";
+    protected static final String TRASH_RESOURCES_PATH = "v1/disk/trash/resources";
+    protected static final String RESTORE_FROM_TRASH_PATH = "v1/disk/trash/resources/restore?path=%s";
+
+    protected ThreadLocal<String> uniqueFolderName = new ThreadLocal<>();
+    protected static final String NESTED_FOLDER = "nestedFolder";
+    protected ThreadLocal<String> uniqueFileName = new ThreadLocal<>();
     protected final PropertyProvider PROPS = PropertyProvider.getInstance();
     protected RequestSpecification requestSpec;
     protected RequestSpecification requestSpecWithoutAuth;
-    protected List<String> createdResources;
+    protected ThreadLocal<List<String>> createdResources = ThreadLocal.withInitial(ArrayList::new);
 
     @BeforeClass
     public void setUp() {
@@ -41,17 +52,23 @@ public class BaseYandexDiscTest {
     }
 
     @BeforeMethod
-    protected void initTestContent() {
-        createdResources = new ArrayList<>();
+    protected void initTestContent(Method method) {
+        createdResources.get().clear();
+
+        String unique = method.getName() + "_" + UUID.randomUUID();
+        uniqueFolderName.set(unique);
+        uniqueFileName.set(unique + ".txt");
     }
 
     @AfterMethod
     public void cleaUp() {
-        for (String folderName : createdResources) {
+        for (String folderName : createdResources.get()) {
             deleteFolderPermanently(folderName);
             deleteFolderFromTrash(folderName);
         }
-        createdResources.clear();
+        createdResources.remove();
+        uniqueFolderName.remove();
+        uniqueFileName.remove();
     }
 
     protected void createFolder(String folderName) {
@@ -93,6 +110,6 @@ public class BaseYandexDiscTest {
     }
 
     protected void registerCreatedResource(String resource) {
-        createdResources.add(resource);
+        createdResources.get().add(resource);
     }
 }

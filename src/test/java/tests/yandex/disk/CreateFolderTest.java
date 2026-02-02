@@ -9,54 +9,59 @@ public class CreateFolderTest extends BaseYandexDiscTest {
 
     @Test
     public void testCreateFolderInRootDirectory() {
-        registerCreatedResource(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        registerCreatedResource(folderName);
 
         given()
                 .spec(requestSpec)
-                .put("v1/disk/resources?path=%s".formatted(FOLDER_NAME))
+                .put(RESOURCE_PATH.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(201)
                 .body("method", equalTo("GET"))
-                .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s".formatted(FOLDER_NAME)))
+                .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s".formatted(folderName)))
                 .body("templated", equalTo(false));
     }
 
     @Test
     public void testCreateNestedFolder() {
-        createFolder(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
 
         given()
                 .spec(requestSpec)
-                .put("v1/disk/resources?path=%s/%s".formatted(FOLDER_NAME, NESTED_FOLDER))
+                .put(NESTED_RESOURCE_PATH.formatted(folderName, NESTED_FOLDER))
                 .then()
                 .log().all()
                 .statusCode(201)
                 .body("method", equalTo("GET"))
-                .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s%%2F%s".formatted(FOLDER_NAME, NESTED_FOLDER)))
+                .body("href", equalTo("https://cloud-api.yandex.net/v1/disk/resources?path=disk%%3A%%2F%s%%2F%s".formatted(folderName, NESTED_FOLDER)))
                 .body("templated", equalTo(false));
     }
 
     @Test
     public void testCreateFolderWithExistingName() {
-        createFolder(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        createFolder(folderName);
 
         given()
                 .spec(requestSpec)
-                .put("v1/disk/resources?path=%s".formatted(FOLDER_NAME))
+                .put(RESOURCE_PATH.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(409)
                 .body("error", equalTo("DiskPathPointsToExistentDirectoryError"))
-                .body("description", equalTo("Specified path \"%s\" points to existent directory.".formatted(FOLDER_NAME)))
-                .body("message", equalTo("По указанному пути \"%s\" уже существует папка с таким именем.".formatted(FOLDER_NAME)));
+                .body("description", equalTo("Specified path \"%s\" points to existent directory.".formatted(folderName)))
+                .body("message", equalTo("По указанному пути \"%s\" уже существует папка с таким именем.".formatted(folderName)));
     }
 
     @Test
     public void testCreateFolderWithoutOAuthToken() {
+        String folderName = uniqueFolderName.get();
+
         given()
                 .spec(requestSpecWithoutAuth)
-                .put("v1/disk/resources?path=%s".formatted(FOLDER_NAME))
+                .put(RESOURCE_PATH.formatted(folderName))
                 .then()
                 .log().all()
                 .statusCode(401)

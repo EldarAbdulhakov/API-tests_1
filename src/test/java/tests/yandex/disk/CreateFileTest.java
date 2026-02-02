@@ -9,9 +9,11 @@ public class CreateFileTest extends BaseYandexDiscTest {
 
     @Test
     public void testCreateTextFileInRoot() {
+        String fileName = uniqueFileName.get();
+
         String href = given()
                 .spec(requestSpec)
-                .get("v1/disk/resources/upload?path=file.txt")
+                .get(UPLOAD_RESOURCE_PATH.formatted(fileName))
                 .then()
                 .extract().path("href");
 
@@ -24,11 +26,13 @@ public class CreateFileTest extends BaseYandexDiscTest {
 
     @Test
     public void testCreateTextFileInFolder() {
-        createFolder(FOLDER_NAME);
+        String folderName = uniqueFolderName.get();
+        String fileName = uniqueFileName.get();
+        createFolder(folderName);
 
         String href = given()
                 .spec(requestSpec)
-                .get("v1/disk/resources/upload?path=%s/file.txt".formatted(FOLDER_NAME))
+                .get(NESTED_UPLOAD_RESOURCE_PATH.formatted(folderName, fileName))
                 .then()
                 .extract().path("href");
 
@@ -41,9 +45,11 @@ public class CreateFileTest extends BaseYandexDiscTest {
 
     @Test
     public void testCreateTextFileWithoutOAuthToken() {
+        String fileName = uniqueFileName.get();
+
         given()
                 .spec(requestSpecWithoutAuth)
-                .get("v1/disk/resources/upload?path=file.txt")
+                .get(UPLOAD_RESOURCE_PATH.formatted(fileName))
                 .then()
                 .statusCode(401)
                 .body("error", equalTo("UnauthorizedError"))
