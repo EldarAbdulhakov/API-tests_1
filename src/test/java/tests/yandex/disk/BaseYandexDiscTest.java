@@ -26,6 +26,8 @@ public class BaseYandexDiscTest {
     protected static final String NESTED_UPLOAD_RESOURCE_PATH = "v1/disk/resources/upload?path=%s/%s";
     protected static final String TRASH_RESOURCES_PATH = "v1/disk/trash/resources";
     protected static final String RESTORE_FROM_TRASH_PATH = "v1/disk/trash/resources/restore?path=%s";
+    protected static final String DOWNLOAD_RESOURCE_PATH = "v1/disk/resources/download";
+    protected static final String COPY_RESOURCE_PATH = "v1/disk/resources/copy";
 
     protected ThreadLocal<String> uniqueFolderName = new ThreadLocal<>();
     protected static final String NESTED_FOLDER = "nestedFolder";
