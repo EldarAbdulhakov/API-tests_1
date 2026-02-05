@@ -16,7 +16,7 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
     public void testRestoreFolderFromTrash() {
         String folderName = uniqueFolderName.get();
         createFolder(folderName);
-        deleteFolderToTrash(folderName);
+        deleteResourceToTrash(folderName);
 
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)
@@ -57,7 +57,7 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
         String folderName = uniqueFolderName.get();
         createFolder(folderName);
         createFolder(folderName + "/" + NESTED_FOLDER);
-        deleteFolderToTrash(folderName);
+        deleteResourceToTrash(folderName);
 
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)
@@ -97,7 +97,7 @@ public class RecoveryFolderTest extends BaseYandexDiscTest {
     public void testRestoreFolderFromTrashWithoutAuthToken() {
         String folderName = uniqueFolderName.get();
         createFolder(folderName);
-        deleteFolderToTrash(folderName);
+        deleteResourceToTrash(folderName);
 
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)

@@ -65,8 +65,8 @@ public class BaseYandexDiscTest {
     @AfterMethod
     public void cleaUp() {
         for (String folderName : createdResources.get()) {
-            deleteFolderPermanently(folderName);
-            deleteFolderFromTrash(folderName);
+            deleteResourcePermanently(folderName);
+            deleteResourceFromTrash(folderName);
         }
         createdResources.remove();
         uniqueFolderName.remove();
@@ -81,19 +81,19 @@ public class BaseYandexDiscTest {
         registerCreatedResource(folderName);
     }
 
-    protected void deleteFolderToTrash(String folderName) {
+    protected void deleteResourceToTrash(String folderName) {
         given()
                 .spec(requestSpec)
                 .delete("v1/disk/resources?path=%s".formatted(folderName));
     }
 
-    private void deleteFolderPermanently(String folderName) {
+    private void deleteResourcePermanently(String folderName) {
         given()
                 .spec(requestSpec)
                 .delete("v1/disk/resources?path=%s&permanently=true".formatted(folderName));
     }
 
-    private void deleteFolderFromTrash(String resource) {
+    private void deleteResourceFromTrash(String resource) {
         List<Map<String, Object>> items = given()
                 .spec(requestSpec)
                 .get("v1/disk/trash/resources")
@@ -113,5 +113,22 @@ public class BaseYandexDiscTest {
 
     protected void registerCreatedResource(String resource) {
         createdResources.get().add(resource);
+    }
+
+    public void createTextFileInRoot() {
+        String fileName = UUID.randomUUID() + ".txt";
+
+        String href = given()
+                .spec(requestSpec)
+                .get(UPLOAD_RESOURCE_PATH.formatted(fileName))
+                .then()
+                .extract().path("href");
+
+        given()
+                .spec(requestSpec)
+                .put(href)
+                .then();
+
+        registerCreatedResource(fileName);
     }
 }
