@@ -1,0 +1,206 @@
+{
+  "properties": {
+    "limit": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Resource"
+      }
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "Resource": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        },
+        "modified": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "md5": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "string"
+        },
+        "public_key": {
+          "type": "string"
+        },
+        "public_url": {
+          "type": "string"
+        },
+        "_embedded": {
+          "$ref": "#/definitions/ResourceList"
+        },
+        "media_type": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "string"
+        },
+        "share": {
+          "$ref": "#/definitions/ShareInfo"
+        },
+        "revision": {
+          "type": "integer"
+        },
+        "comment_ids": {
+          "$ref": "#/definitions/CommentIds"
+        },
+        "custom_properties": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "exif": {
+          "$ref": "#/definitions/Exif"
+        },
+        "antivirus_status": {
+          "type": "string",
+          "additionalProperties": true
+        },
+        "photoslice_time": {
+          "type": "string"
+        },
+        "sizes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Preview"
+          }
+        }
+      },
+      "required": [
+        "path",
+        "type",
+        "name",
+        "created",
+        "modified"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceList": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "path": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Resource"
+          }
+        }
+      },
+      "required": [
+        "items",
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "ShareInfo": {
+      "type": "object",
+      "properties": {
+        "is_owned": {
+          "type": "boolean"
+        },
+        "is_root": {
+          "type": "boolean"
+        },
+        "rights": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rights"
+      ],
+      "additionalProperties": false
+    },
+    "CommentIds": {
+      "type": "object",
+      "properties": {
+        "public_resource": {
+          "type": "string"
+        },
+        "private_resource": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Exif": {
+      "type": "object",
+      "properties": {
+        "date_time": {
+          "type": "string"
+        },
+        "gps_latitude": {
+          "type": "object"
+        },
+        "gps_longitude": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Preview": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
