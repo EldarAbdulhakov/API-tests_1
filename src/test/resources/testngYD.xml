@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="Yandex Disk API Tests" verbose = "1" parallel = "methods" thread-count = "6">
+
+    <test name = "API tests">
+        <packages>
+            <package name = "tests.yandex.disk.*"/>
+        </packages>
+    </test>
+
+</suite>
